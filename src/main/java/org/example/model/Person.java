@@ -1,16 +1,18 @@
 package org.example.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "Person")
+@Table(name = "person")
 public class Person {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "person_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+// в случае, если бд автоматическине не ходит в Sequence за очередным числом. Hibernate берет на себя отвественность за передачу и генерацию айди
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator_person")  //
+//    @SequenceGenerator(name = "seq_generator_person",                                        // name = название в коде
+//    sequenceName = "person_id_seq", allocationSize = 1)   // sequenceName = название в бд, allocationSize = множитель числа из sequence
     private int id;
 
     @Column(name = "name")
@@ -21,8 +23,7 @@ public class Person {
 
     public Person() {}
 
-    public Person(int id, String name, int age) {
-        this.id = id;
+    public Person(String name, int age) {
         this.name = name;
         this.age = age;
     }

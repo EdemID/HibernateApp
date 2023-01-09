@@ -18,12 +18,16 @@ public class App {
         try {
             session.beginTransaction();
 
-            Person save = new Person("lil3", 32);
+            Person save = new Person("lil7", 32);
             session.save(save);
-// в рамках одной транзации возможно создавать новый элемент в бд и возвращать
-            Person person = session.get(Person.class, 12);
+// в рамках одной транзации возможно создавать новый элемент в бд, возвращать, обновлять и удалять
+            Person person = session.get(Person.class, 18);
             System.out.println(person.getName());
             System.out.println(person.getAge());
+
+            person.setName("lil8");
+            System.out.println(person.getName());
+            session.delete(person);
 
             session.getTransaction().commit();
 

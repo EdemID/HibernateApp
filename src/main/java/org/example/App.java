@@ -26,7 +26,7 @@ public class App {
         try {
             session.beginTransaction();
 
-            update(session);
+            addItem(session);
 
             session.getTransaction().commit();
 
@@ -94,7 +94,7 @@ public class App {
         // проставятся значения null при удалении строки из Таблицы Hero,
         // так как на стороне бд задали каскадирование
         session.remove(hero);
-        hero.getItems().forEach(item -> item.setOwner(null));
+//        hero.getItems().forEach(item -> item.setOwner(null));
     }
 
     private static void update(Session session) {
@@ -107,5 +107,22 @@ public class App {
         item.setOwner(hero);
         // Операция для кэша Хибера - назначаем обратную связь
         hero.getItems().add(item);
+    }
+
+    private static void cascade(Session session) {
+        Hero hero = new Hero("Test cascading", 40);
+        Item item = new Item("Item by cascading", hero);
+        hero.setItems(new ArrayList<>(Collections.singletonList(item)));
+        session.save(hero);
+//        session.persist(hero);
+    }
+
+    private static void addItem(Session session) {
+        Hero hero = new Hero("Test", 23);
+        hero.addItem(new Item("Item1"));
+        hero.addItem(new Item("Item2"));
+        hero.addItem(new Item("Item3"));
+
+        session.save(hero);
     }
 }

@@ -23,11 +23,7 @@ public class App {
         try {
             session.beginTransaction();
 
-            Person person = new Person("Ivan", 32);
-            Passport passport = new Passport(12345);
-            person.setPassport(passport);
-
-            session.save(person);
+            delete(session);
 
             session.getTransaction().commit();
 
@@ -35,5 +31,29 @@ public class App {
         } finally {
             sessionFactory.close();
         }
+    }
+
+    private static void save(Session session) {
+        Person person = new Person("Ivan", 32);
+        Passport passport = new Passport(12345);
+        person.setPassport(passport);
+
+        session.save(person);
+    }
+
+    private static void getPerson(Session session) {
+        Passport passport = session.get(Passport.class, 1);
+        Person person = passport.getPerson();
+    }
+
+    private static void updatePassport(Session session) {
+        Person person = session.get(Person.class, 1);
+        Passport passport = person.getPassport();
+        passport.setPassportNumber(678789);
+    }
+
+    private static void delete(Session session) {
+        Person person = session.get(Person.class, 1);
+        session.remove(person);
     }
 }

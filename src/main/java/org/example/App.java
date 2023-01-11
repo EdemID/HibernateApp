@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.model.Hero;
 import org.example.model.Item;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -124,5 +125,37 @@ public class App {
         hero.addItem(new Item("Item3"));
 
         session.save(hero);
+    }
+
+    private static void init(SessionFactory factory) {
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
+
+        Hero hero = session.get(Hero.class, 1);
+        System.out.println("Получили героя из таблицы");
+
+        session.getTransaction().commit();
+
+        System.out.println("Сессия закончилась");
+        // hero перешел из состояния Persistent в состояние Detached
+        // Открываем сессию и транзакцию, сделать это можно в любом другом месте
+        session = factory.getCurrentSession();
+        session.beginTransaction();
+
+        System.out.println("Внутри второй транзакции");
+        hero = (Hero) session.merge(hero);
+//  подгрузить связанные ленивые сущности - это помогает сохранять в объект элементы таблицы Many для работы с объектом при состоянии Detached
+        // Первый вариант
+        Hibernate.initialize(hero.getItems());
+        // Второй вариант
+//        List<Item> items = session.createQuery("SELECT i from Item i where i.owner.id =: heroId", Item.class)
+//                        .setParameter("heroId", hero.getId()).getResultList();
+//        System.out.println(items);
+
+        session.getTransaction().commit();
+
+        System.out.println("Вне второй сессии");
+//  это сработает так как связаные Item были загружены во второй сессии
+        System.out.println(hero.getItems());
     }
 }

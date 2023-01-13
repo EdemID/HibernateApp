@@ -39,9 +39,17 @@ public class App {
     }
 
     private static List<Item> getHeroItems(Session session) {
+
+        Hero heroProxy = session.load(Hero.class, 3);
+        // отличие load() от get() - возвращает Proxy объект не делая запрос к бд
+        // все поля, кроме id имеют значение null (если объект не был ранее загружен в память)
+        // но если вызываем геттер в этой и или других транзакциях на каком-то из полей,
+        // то выполняется запрос к бд и достаются значения всех полей
+
         Hero hero = session.get(Hero.class, 3);
         // для того, чтобы Hibernate сделал за нас SQL-запрос, нужно вызывать getter в рамках транзакции,
         // иначе getter работает просто как с объектом
+
         return hero.getItems();
     }
 
